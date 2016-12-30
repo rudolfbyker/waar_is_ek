@@ -1,4 +1,4 @@
-package com.example.dolf.myfirstapplication;
+package com.example.dolf.waar_is_ek;
 
 import org.junit.Test;
 

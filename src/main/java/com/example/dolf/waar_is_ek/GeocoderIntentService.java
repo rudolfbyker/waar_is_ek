@@ -1,8 +1,7 @@
-package com.example.dolf.myfirstapplication;
+package com.example.dolf.waar_is_ek;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -20,15 +19,15 @@ import static com.google.android.gms.internal.zzs.TAG;
 
 
 /**
- * An {@link IntentService} subclass for handling asynchronous Geocoding task requests in
+ * An {@link IntentService} subclass for handling asynchronous geocoding task requests in
  * a service on a separate handler thread.
  */
 public class GeocoderIntentService extends IntentService {
 
-    protected static final String ACTION_FETCH_ADDRESS = "com.example.dolf.myfirstapplication.action.FOO";
-    protected static final String EXTRA_LOCATION = "com.example.dolf.myfirstapplication.extra.LOCATION";
-    protected static final String EXTRA_RECEIVER = "com.example.dolf.myfirstapplication.extra.RECEIVER";
-    protected static final String RESULT_ADDRESS = "com.example.dolf.myfirstapplication.result.ADDRESS";
+    protected static final String ACTION_FETCH_ADDRESS = "com.example.dolf.waar_is_ek.action.FOO";
+    protected static final String EXTRA_LOCATION = "com.example.dolf.waar_is_ek.extra.LOCATION";
+    protected static final String EXTRA_RECEIVER = "com.example.dolf.waar_is_ek.extra.RECEIVER";
+    protected static final String RESULT_ADDRESS = "com.example.dolf.waar_is_ek.result.ADDRESS";
     protected static final int RESULT_SUCCESS = 0;
     protected static final int RESULT_FAILURE = 1;
 
@@ -101,7 +100,7 @@ public class GeocoderIntentService extends IntentService {
             deliverResultToReceiver(RESULT_FAILURE, errorMessage, receiver);
         } else {
             Address address = addresses.get(0);
-            ArrayList<String> addressFragments = new ArrayList<String>();
+            ArrayList<String> addressFragments = new ArrayList<>();
 
             // Fetch the address lines using getAddressLine,
             // join them, and send them to the thread.

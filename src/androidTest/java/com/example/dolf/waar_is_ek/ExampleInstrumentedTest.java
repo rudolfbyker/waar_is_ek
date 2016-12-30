@@ -1,4 +1,4 @@
-package com.example.dolf.myfirstapplication;
+package com.example.dolf.waar_is_ek;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.example.dolf.myfirstapplication", appContext.getPackageName());
+        assertEquals("com.example.dolf.waar_is_ek", appContext.getPackageName());
     }
 }
