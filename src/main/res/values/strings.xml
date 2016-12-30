@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Waar is ek?</string>
+    <string name="latitude">latitude</string>
+    <string name="longitude">longitude</string>
+    <string name="time">time</string>
+    <string name="accuracy">accuracy</string>
+</resources>
