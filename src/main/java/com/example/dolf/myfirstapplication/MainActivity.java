@@ -3,7 +3,10 @@ package com.example.dolf.myfirstapplication;
 import android.Manifest;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.location.Geocoder;
 import android.location.Location;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -26,6 +29,7 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import android.content.pm.PackageManager;
 
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 public class MainActivity
         extends AppCompatActivity
@@ -37,14 +41,17 @@ public class MainActivity
 
     private TextView latitudeText;
     private TextView longitudeText;
-    private TextView statusText;
     private TextView timeText;
     private TextView accuracyText;
+    private TextView addressText;
+    private TextView statusText;
     private GoogleApiClient mGoogleApiClient;
     private Location location;
     private LocationRequest mLocationRequest;
+    private AddressResultReceiver mResultReceiver;
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private static final Locale locale = Locale.getDefault();
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", locale);
 
     public static final int REQUEST_CHECK_SETTINGS = 1;
 
@@ -57,9 +64,12 @@ public class MainActivity
         longitudeText = (TextView) findViewById(R.id.longitude);
         timeText = (TextView) findViewById(R.id.time);
         accuracyText = (TextView) findViewById(R.id.accuracy);
+        addressText = (TextView) findViewById(R.id.address);
         statusText = (TextView) findViewById(R.id.status);
 
         statusUpdate("Creating activity…");
+
+        mResultReceiver = new AddressResultReceiver(new Handler());
 
         requestLocationPermissions();
 
@@ -81,7 +91,6 @@ public class MainActivity
         statusUpdate("Requesting location permissions…");
         ActivityCompat.requestPermissions(this, new String[]{
                 Manifest.permission.ACCESS_FINE_LOCATION,
-//                android.Manifest.permission.ACCESS_COARSE_LOCATION
         }, 0);
     }
 
@@ -128,38 +137,34 @@ public class MainActivity
         startLocationUpdates();
     }
 
+
     private void requestLastKnownLocation() {
         statusUpdate("Getting last known location…");
-        if (
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-//                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                ) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestLocationPermissions();
             return;
         }
         location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (location == null) {
             statusUpdate("Location not available.");
-        } else {
-            statusUpdate("Got last known location:\n" + location.toString());
-            updateUI();
+            return;
         }
+        statusUpdate("Got last known location:\n" + location.toString());
+        updateUI();
     }
+
 
     private void updateUI() {
         latitudeText.setText(String.valueOf(location.getLatitude()));
         longitudeText.setText(String.valueOf(location.getLongitude()));
         timeText.setText(sdf.format(location.getTime()));
-        accuracyText.setText(String.format("Accuracy [m] = %.2f", location.getAccuracy()));
+        accuracyText.setText(String.format(locale, "Accuracy [m] = %.2f", location.getAccuracy()));
     }
 
 
     protected void startLocationUpdates() {
         statusUpdate("Starting location updates…");
-        if (
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-//                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                ) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestLocationPermissions();
             return;
         }
@@ -200,7 +205,7 @@ public class MainActivity
         switch (status.getStatusCode()) {
             case LocationSettingsStatusCodes.SUCCESS:
                 statusUpdate("All location settings are satisfied.");
-                // TODO initialize location requests here.
+                // TODO initialize location requests here??
                 break;
             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                 statusUpdate("User is required to change location settings.");
@@ -221,7 +226,7 @@ public class MainActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        statusUpdate(String.format("Got activity result: %d, %d", requestCode, resultCode));
+        statusUpdate(String.format(locale, "Got activity result: %d, %d", requestCode, resultCode));
         switch (requestCode) {
             case REQUEST_CHECK_SETTINGS:
                 if (resultCode == RESULT_OK) {
@@ -242,6 +247,49 @@ public class MainActivity
         statusUpdate("Got new location:\n" + location.toString());
         this.location = location;
         updateUI();
+
+        // Determine whether a Geocoder is available.
+        if (!Geocoder.isPresent()) {
+            statusUpdate(getString(R.string.no_geocoder_available));
+            return;
+        }
+
+        startGeocoderIntentService(this.location, this.mResultReceiver);
+
+    }
+
+
+    protected void startGeocoderIntentService(Location location, ResultReceiver receiver) {
+        statusUpdate("Starting geocoder intent service…");
+        Intent intent = new Intent(this, GeocoderIntentService.class);
+        intent.setAction(GeocoderIntentService.ACTION_FETCH_ADDRESS);
+        intent.putExtra(GeocoderIntentService.EXTRA_RECEIVER, receiver);
+        intent.putExtra(GeocoderIntentService.EXTRA_LOCATION, location);
+        startService(intent);
+    }
+
+
+    class AddressResultReceiver extends ResultReceiver {
+
+        AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            String mAddressOutput = resultData.getString(GeocoderIntentService.RESULT_ADDRESS);
+            statusUpdate("Received result from geocoder intent service:\n" + mAddressOutput);
+
+            if (resultCode == GeocoderIntentService.RESULT_SUCCESS) {
+                statusUpdate(getString(R.string.address_found));
+                addressText.setText(mAddressOutput);
+            } else {
+                statusUpdate(getString(R.string.no_address_found));
+                addressText.setText(getString(R.string.no_address_found));
+            }
+
+        }
+
     }
 
 

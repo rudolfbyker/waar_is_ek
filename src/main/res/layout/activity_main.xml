@@ -31,6 +31,12 @@
         android:layout_height="wrap_content"
         android:id="@+id/accuracy" />
 
+    <TextView
+        android:text="@string/address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/address" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
