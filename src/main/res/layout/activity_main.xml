@@ -3,39 +3,51 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
 
-    <TextView android:id="@+id/latitude"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/latitude"
-        android:textSize="40sp" />
+        android:layout_height="0dp"
+        android:layout_weight="1" >
 
-    <TextView android:id="@+id/longitude"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/longitude"
-        android:textSize="40sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
 
-    <TextView
-        android:text="@string/time"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/time" />
+            <TextView android:id="@+id/latitude"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/latitude"
+                android:textSize="40sp" />
 
-    <TextView
-        android:text="@string/accuracy"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/accuracy" />
+            <TextView android:id="@+id/longitude"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/longitude"
+                android:textSize="40sp" />
 
-    <TextView
-        android:text="@string/address"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/address" />
+            <TextView
+                android:text="@string/time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/time" />
+
+            <TextView
+                android:text="@string/accuracy"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/accuracy" />
+
+            <TextView
+                android:text="@string/address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/address" />
+        </LinearLayout>
+    </ScrollView>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -45,7 +57,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical" >
 
             <TextView
